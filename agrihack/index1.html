@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 600px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crop Recommendation System</h1>
+    <form id="cropForm">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required>
+
+        <label for="nitrogen">Nitrogen (N):</label>
+        <input type="number" id="nitrogen" name="nitrogen" required>
+
+        <label for="phosphorus">Phosphorus (P):</label>
+        <input type="number" id="phosphorus" name="phosphorus" required>
+
+        <label for="potassium">Potassium (K):</label>
+        <input type="number" id="potassium" name="potassium" required>
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" id="temperature" name="temperature" required>
+
+        <label for="humidity">Humidity (%):</label>
+        <input type="number" id="humidity" name="humidity" required>
+
+        <label for="ph_value">pH Value:</label>
+        <input type="number" id="ph_value" name="ph_value" step="0.1" required>
+
+        <label for="rainfall">Rainfall (mm):</label>
+        <input type="number" id="rainfall" name="rainfall" required>
+
+        <label for="soil_type">Soil Type:</label>
+        <select id="soil_type" name="soil_type" required>
+            <option value="Loam">Loam</option>
+            <option value="Clay">Clay</option>
+            <option value="Sandy">Sandy</option>
+        </select>
+
+        <label for="irrigation_type">Irrigation Type:</label>
+        <select id="irrigation_type" name="irrigation_type" required>
+            <option value="Drip">Drip</option>
+            <option value="Flood">Flood</option>
+            <option value="Sprinkler">Sprinkler</option>
+        </select>
+
+        <label for="fertilizer_used">Fertilizer Used (tons):</label>
+        <input type="number" id="fertilizer_used" name="fertilizer_used" required>
+
+        <label for="pesticide_used">Pesticide Used (kg):</label>
+        <input type="number" id="pesticide_used" name="pesticide_used" required>
+
+        <label for="season">Season:</label>
+        <select id="season" name="season" required>
+            <option value="Kharif">Kharif</option>
+            <option value="Rabi">Rabi</option>
+        </select>
+
+        <button type="button" onclick="getRecommendation()">Submit</button>
+    </form>
+
+    <p id="result"></p>
+
+    <script>
+        async function getRecommendation() {
+            const city = document.getElementById('city').value;
+            const nitrogen = document.getElementById('nitrogen').value;
+            const phosphorus = document.getElementById('phosphorus').value;
+            const potassium = document.getElementById('potassium').value;
+            const temperature = document.getElementById('temperature').value;
+            const humidity = document.getElementById('humidity').value;
+            const ph_value = document.getElementById('ph_value').value;
+            const rainfall = document.getElementById('rainfall').value;
+            const soil_type = document.getElementById('soil_type').value;
+            const irrigation_type = document.getElementById('irrigation_type').value;
+            const fertilizer_used = document.getElementById('fertilizer_used').value;
+            const pesticide_used = document.getElementById('pesticide_used').value;
+            const season = document.getElementById('season').value;
+
+            const payload = { 
+                city, 
+                nitrogen, 
+                phosphorus, 
+                potassium, 
+                temperature, 
+                humidity, 
+                ph_value, 
+                rainfall, 
+                soil_type, 
+                irrigation_type, 
+                fertilizer_used, 
+                pesticide_used, 
+                season
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('result').innerText = `Recommended Crop: ${result.recommended_crop}`;
+                } else {
+                    document.getElementById('result').innerText = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
